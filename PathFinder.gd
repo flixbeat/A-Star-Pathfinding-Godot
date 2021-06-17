@@ -1,6 +1,9 @@
 extends Node
 
+enum Direction {FOUR, EIGHT}
+
 export(NodePath) var tilemap_path
+export(Direction) var directional_movement = Direction.FOUR
 export var speed = 160
 
 var _tilemap : TileMap
@@ -138,6 +141,10 @@ func _get_path(start_position: Vector2, target_position: Vector2):
 
 func _get_neighbors(x: int, y: int): # Vector2 array	
 	var neighbors = [Vector2(x,y-1),Vector2(x,y+1),Vector2(x-1,y),Vector2(x+1,y)]
+	
+	if directional_movement == Direction.EIGHT:
+		var diagonal_neighbors = [Vector2(x-1,y-1),Vector2(x-1,y+1),Vector2(x-1,y+1),Vector2(x+1,y-1)]
+		neighbors.append_array(diagonal_neighbors)
 	
 	var walkable_neighbors = []
 	
