@@ -1,10 +1,13 @@
-[gd_resource type="TileSet" load_steps=2 format=2]
+[gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://scenes/_main/ch3sc2/Minigames/AswangWorld2/assets/underworld_load-atlas-32x32.png" type="Texture" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=1]
+[ext_resource path="res://assets/underworld_load-atlas-32x32.png" type="Texture" id=2]
+[ext_resource path="res://Agent.gd" type="Script" id=3]
+[ext_resource path="res://PathFinder.gd" type="Script" id=4]
 
-[resource]
+[sub_resource type="TileSet" id=1]
 0/name = "walkable"
-0/texture = ExtResource( 1 )
+0/texture = ExtResource( 2 )
 0/tex_offset = Vector2( 0, 0 )
 0/modulate = Color( 1, 1, 1, 1 )
 0/region = Rect2( 416, 352, 32, 32 )
@@ -18,7 +21,7 @@
 0/shapes = [  ]
 0/z_index = 0
 1/name = "underworld_load-atlas-32x32.png 1"
-1/texture = ExtResource( 1 )
+1/texture = ExtResource( 2 )
 1/tex_offset = Vector2( 0, 0 )
 1/modulate = Color( 1, 1, 1, 1 )
 1/region = Rect2( 416, 384, 32, 32 )
@@ -32,7 +35,7 @@
 1/shapes = [  ]
 1/z_index = 0
 2/name = "underworld_load-atlas-32x32.png 2"
-2/texture = ExtResource( 1 )
+2/texture = ExtResource( 2 )
 2/tex_offset = Vector2( 0, 0 )
 2/modulate = Color( 1, 1, 1, 1 )
 2/region = Rect2( 384, 384, 32, 32 )
@@ -46,7 +49,7 @@
 2/shapes = [  ]
 2/z_index = 0
 3/name = "underworld_load-atlas-32x32.png 3"
-3/texture = ExtResource( 1 )
+3/texture = ExtResource( 2 )
 3/tex_offset = Vector2( 0, 0 )
 3/modulate = Color( 1, 1, 1, 1 )
 3/region = Rect2( 448, 384, 32, 32 )
@@ -60,7 +63,7 @@
 3/shapes = [  ]
 3/z_index = 0
 4/name = "underworld_load-atlas-32x32.png 4"
-4/texture = ExtResource( 1 )
+4/texture = ExtResource( 2 )
 4/tex_offset = Vector2( 0, 0 )
 4/modulate = Color( 1, 1, 1, 1 )
 4/region = Rect2( 480, 384, 32, 32 )
@@ -74,7 +77,7 @@
 4/shapes = [  ]
 4/z_index = 0
 5/name = "underworld_load-atlas-32x32.png 5"
-5/texture = ExtResource( 1 )
+5/texture = ExtResource( 2 )
 5/tex_offset = Vector2( 0, 0 )
 5/modulate = Color( 1, 1, 1, 1 )
 5/region = Rect2( 384, 416, 32, 32 )
@@ -88,7 +91,7 @@
 5/shapes = [  ]
 5/z_index = 0
 6/name = "underworld_load-atlas-32x32.png 6"
-6/texture = ExtResource( 1 )
+6/texture = ExtResource( 2 )
 6/tex_offset = Vector2( 0, 0 )
 6/modulate = Color( 1, 1, 1, 1 )
 6/region = Rect2( 416, 416, 32, 32 )
@@ -102,7 +105,7 @@
 6/shapes = [  ]
 6/z_index = 0
 7/name = "underworld_load-atlas-32x32.png 7"
-7/texture = ExtResource( 1 )
+7/texture = ExtResource( 2 )
 7/tex_offset = Vector2( 0, 0 )
 7/modulate = Color( 1, 1, 1, 1 )
 7/region = Rect2( 448, 416, 32, 32 )
@@ -116,7 +119,7 @@
 7/shapes = [  ]
 7/z_index = 0
 8/name = "underworld_load-atlas-32x32.png 8"
-8/texture = ExtResource( 1 )
+8/texture = ExtResource( 2 )
 8/tex_offset = Vector2( 0, 0 )
 8/modulate = Color( 1, 1, 1, 1 )
 8/region = Rect2( 480, 416, 32, 32 )
@@ -130,7 +133,7 @@
 8/shapes = [  ]
 8/z_index = 0
 9/name = "underworld_load-atlas-32x32.png 9"
-9/texture = ExtResource( 1 )
+9/texture = ExtResource( 2 )
 9/tex_offset = Vector2( 0, 0 )
 9/modulate = Color( 1, 1, 1, 1 )
 9/region = Rect2( 384, 448, 32, 32 )
@@ -144,7 +147,7 @@
 9/shapes = [  ]
 9/z_index = 0
 10/name = "underworld_load-atlas-32x32.png 10"
-10/texture = ExtResource( 1 )
+10/texture = ExtResource( 2 )
 10/tex_offset = Vector2( 0, 0 )
 10/modulate = Color( 1, 1, 1, 1 )
 10/region = Rect2( 416, 448, 32, 32 )
@@ -158,7 +161,7 @@
 10/shapes = [  ]
 10/z_index = 0
 11/name = "underworld_load-atlas-32x32.png 11"
-11/texture = ExtResource( 1 )
+11/texture = ExtResource( 2 )
 11/tex_offset = Vector2( 0, 0 )
 11/modulate = Color( 1, 1, 1, 1 )
 11/region = Rect2( 448, 448, 32, 32 )
@@ -172,7 +175,7 @@
 11/shapes = [  ]
 11/z_index = 0
 12/name = "underworld_load-atlas-32x32.png 12"
-12/texture = ExtResource( 1 )
+12/texture = ExtResource( 2 )
 12/tex_offset = Vector2( 0, 0 )
 12/modulate = Color( 1, 1, 1, 1 )
 12/region = Rect2( 384, 480, 32, 32 )
@@ -186,7 +189,7 @@
 12/shapes = [  ]
 12/z_index = 0
 13/name = "underworld_load-atlas-32x32.png 13"
-13/texture = ExtResource( 1 )
+13/texture = ExtResource( 2 )
 13/tex_offset = Vector2( 0, 0 )
 13/modulate = Color( 1, 1, 1, 1 )
 13/region = Rect2( 480, 448, 32, 32 )
@@ -200,7 +203,7 @@
 13/shapes = [  ]
 13/z_index = 0
 14/name = "underworld_load-atlas-32x32.png 14"
-14/texture = ExtResource( 1 )
+14/texture = ExtResource( 2 )
 14/tex_offset = Vector2( 0, 0 )
 14/modulate = Color( 1, 1, 1, 1 )
 14/region = Rect2( 416, 480, 32, 32 )
@@ -214,7 +217,7 @@
 14/shapes = [  ]
 14/z_index = 0
 15/name = "underworld_load-atlas-32x32.png 15"
-15/texture = ExtResource( 1 )
+15/texture = ExtResource( 2 )
 15/tex_offset = Vector2( 0, 0 )
 15/modulate = Color( 1, 1, 1, 1 )
 15/region = Rect2( 448, 480, 32, 32 )
@@ -228,7 +231,7 @@
 15/shapes = [  ]
 15/z_index = 0
 16/name = "underworld_load-atlas-32x32.png 16"
-16/texture = ExtResource( 1 )
+16/texture = ExtResource( 2 )
 16/tex_offset = Vector2( 0, 0 )
 16/modulate = Color( 1, 1, 1, 1 )
 16/region = Rect2( 480, 480, 32, 32 )
@@ -242,7 +245,7 @@
 16/shapes = [  ]
 16/z_index = 0
 17/name = "underworld_load-atlas-32x32.png 17"
-17/texture = ExtResource( 1 )
+17/texture = ExtResource( 2 )
 17/tex_offset = Vector2( 0, 0 )
 17/modulate = Color( 1, 1, 1, 1 )
 17/region = Rect2( 416, 352, 32, 32 )
@@ -256,7 +259,7 @@
 17/shapes = [  ]
 17/z_index = 0
 18/name = "walkable"
-18/texture = ExtResource( 1 )
+18/texture = ExtResource( 2 )
 18/tex_offset = Vector2( 0, 0 )
 18/modulate = Color( 1, 1, 1, 1 )
 18/region = Rect2( 448, 352, 32, 32 )
@@ -270,7 +273,7 @@
 18/shapes = [  ]
 18/z_index = 0
 19/name = "walkable"
-19/texture = ExtResource( 1 )
+19/texture = ExtResource( 2 )
 19/tex_offset = Vector2( 0, 0 )
 19/modulate = Color( 1, 1, 1, 1 )
 19/region = Rect2( 480, 352, 32, 32 )
@@ -283,3 +286,31 @@
 19/shape_one_way_margin = 0.0
 19/shapes = [  ]
 19/z_index = 0
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 16, 16 )
+
+[node name="Node2D" type="Node2D"]
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = SubResource( 1 )
+cell_size = Vector2( 32, 32 )
+format = 1
+tile_data = PoolIntArray( 65536, 2, 0, 65537, 1, 0, 65538, 1, 0, 65539, 1, 0, 65540, 1, 0, 65541, 4, 0, 131072, 5, 0, 131073, 0, 0, 131074, 0, 0, 131075, 0, 0, 131076, 0, 0, 131077, 13, 0, 196608, 5, 0, 196609, 0, 0, 196610, 6, 0, 196611, 7, 0, 196612, 0, 0, 196613, 10, 0, 196614, 1, 0, 196615, 1, 0, 196616, 1, 0, 196617, 4, 0, 262144, 5, 0, 262145, 0, 0, 262146, 8, 0, 262147, 9, 0, 262148, 0, 0, 262149, 0, 0, 262150, 0, 0, 262151, 0, 0, 262152, 0, 0, 262153, 10, 0, 262154, 1, 0, 262155, 1, 0, 262156, 1, 0, 262157, 4, 0, 327680, 5, 0, 327681, 0, 0, 327682, 8, 0, 327683, 9, 0, 327684, 0, 0, 327685, 6, 0, 327686, 14, 0, 327687, 7, 0, 327688, 0, 0, 327689, 0, 0, 327690, 0, 0, 327691, 0, 0, 327692, 0, 0, 327693, 13, 0, 393216, 5, 0, 393217, 0, 0, 393218, 10, 0, 393219, 11, 0, 393220, 0, 0, 393221, 10, 0, 393222, 1, 0, 393223, 11, 0, 393224, 0, 0, 393225, 6, 0, 393226, 14, 0, 393227, 14, 0, 393228, 14, 0, 393229, 16, 0, 458752, 5, 0, 458753, 0, 0, 458754, 0, 0, 458755, 0, 0, 458756, 0, 0, 458757, 0, 0, 458758, 0, 0, 458759, 0, 0, 458760, 0, 0, 458761, 8, 0, 524288, 12, 0, 524289, 14, 0, 524290, 14, 0, 524291, 14, 0, 524292, 14, 0, 524293, 7, 0, 524294, 0, 0, 524295, 6, 0, 524296, 15, 0, 524297, 16, 0, 589829, 9, 0, 589830, 0, 0, 589831, 8, 0, 655365, 9, 0, 655366, 0, 0, 655367, 8, 0, 720901, 12, 0, 720902, 14, 0, 720903, 16, 0 )
+
+[node name="KinematicBody2D" type="KinematicBody2D" parent="."]
+position = Vector2( 272, 208 )
+scale = Vector2( 0.5, 0.5 )
+script = ExtResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="KinematicBody2D"]
+modulate = Color( 0.286275, 0.831373, 0.109804, 1 )
+texture = ExtResource( 1 )
+
+[node name="PathFinder" type="Node" parent="KinematicBody2D/Sprite"]
+script = ExtResource( 4 )
+tilemap_path = NodePath("../../../TileMap")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KinematicBody2D"]
+scale = Vector2( 2, 2 )
+shape = SubResource( 2 )

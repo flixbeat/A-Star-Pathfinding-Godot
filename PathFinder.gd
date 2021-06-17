@@ -1,45 +1,83 @@
-extends Node2D
+extends Node
 
-onready var _tilemap = $TileMap
-onready var start_point = $StartPoint
-onready var tween = $StartPoint/Tween
+export(NodePath) var tilemap_path
+export var speed = 160
 
+var _tilemap : TileMap
 var _tileset : TileSet
+
+# local coordinates
 var _cur_pos : Vector2
+var _target_pos : Vector2
+
+# coordinates in tile
+var _start_coord: Vector2
+var _end_coord: Vector2
+var _cur_coord: Vector2
+
+var _object : KinematicBody2D
+var _path # Cell[]
 
 func _ready():
+	_tilemap = get_node(tilemap_path)
 	_tileset = _tilemap.tile_set
+	
+	set_process(false)
 
-func _input(event):
-	if event is InputEventMouseButton and event.is_pressed():
-		var path = _get_path(start_point.position, get_global_mouse_position())
-		_move_along_path(start_point, path)
-
-func _move_along_path(object, path):
+# @param1: object to move. eg: KinematicBody2D/Sprite/...
+func move(object, start_position: Vector2, target_position: Vector2):
+	var path = _get_path(start_position, target_position)
+	
 	if path == null:
-		print("there's no way there")
+		print("no path possible")
 		return
 	
-	for p in path:
-		var next_pos = _tilemap.map_to_world(p.position)
-		next_pos.x += _tilemap.cell_size.x / 2
-		next_pos.y += _tilemap.cell_size.y / 2
-		tween.interpolate_property(object,"position",_cur_pos,next_pos,0.1,Tween.TRANS_LINEAR,Tween.EASE_IN_OUT)
-		tween.start()
+	_object = object
+	_path = path
+	
+	_path.pop_front()
+	set_process(true)
+
+func _process(delta):
+	if _path.empty():
+		set_process(false)
+		return
+	
+	var next_pos = _tilemap.map_to_world(_path[0].position)
+	next_pos.x += _tilemap.cell_size.x / 2
+	next_pos.y += _tilemap.cell_size.y / 2
+	var direction = _cur_pos.direction_to(next_pos)
+	
+	_object.move_and_slide(direction * speed)
+	_cur_coord = _tilemap.world_to_map(_object.position)
+	
+	var cur_point = Vector2(int(_object.position.x),int(_object.position.y))
+	var next_point = Vector2(next_pos.x,next_pos.y)
+	var distance = int(cur_point.distance_to(next_point))
+	
+	if distance <= 1:
 		_cur_pos = next_pos
-		yield(tween,"tween_all_completed")
+		_path.pop_front()
+		_point_reached()
+
+func _point_reached():
+	if _cur_coord == _end_coord:
+		print("target point reached")
+		set_process(false)
+
 # A*
-func _get_path(start_position: Vector2, target_position: Vector2):	
+func _get_path(start_position: Vector2, target_position: Vector2):
 	_cur_pos = start_position
+	_target_pos = target_position
 	
 	var open = [] # Cell[]
 	var closed = [] # Cell[]
 
-	var start_coord = _tilemap.world_to_map(start_position)
-	var end_coord = _tilemap.world_to_map(target_position)
+	_start_coord = _tilemap.world_to_map(start_position)
+	_end_coord = _tilemap.world_to_map(target_position)
 
 	# put starting node to open
-	open.append(Cell.new(start_coord,0,0))
+	open.append(Cell.new(_start_coord,0,0))
 	
 	# while there's an open cell to explore
 	while not open.empty():
@@ -49,23 +87,20 @@ func _get_path(start_position: Vector2, target_position: Vector2):
 			if cell.get_f() < q.get_f():
 				q = cell
 		
-		
 		open.erase(q)
 		closed.append(q)
 		
 		# if goal was reached
-		if q.position == end_coord:
+		if q.position == _end_coord:
 			var current = q
 			var path = [] # Cell[]
 			# get path
 			while current != null:
 				path.append(current)
-				#_tilemap.set_cell(current.position.x, current.position.y,-1)
 				current = current.parent
 			
 			path.invert()
 			return path
-			break
 		
 		# get neighbors
 		var neighbors = _get_neighbors(q.position.x,q.position.y)
@@ -78,13 +113,13 @@ func _get_path(start_position: Vector2, target_position: Vector2):
 			neighbor.parent = q
 			
 			# check if not in the close list
-			var in_close = false
+			var is_in_close = false
 			for c in closed:
 				if neighbor.position == c.position:
-					in_close = true
+					is_in_close = true
 			
 			# if not in the closed list
-			if not in_close:
+			if not is_in_close:
 				var is_in_open = false
 				var in_open: Cell
 				
@@ -94,15 +129,11 @@ func _get_path(start_position: Vector2, target_position: Vector2):
 						in_open = o
 						is_in_open = true
 				
-				# if not in the closed list
+				# if not in the open list
 				if not is_in_open:
 					open.append(neighbor)
-					#_tilemap.set_cell(neighbor.position.x, neighbor.position.y, 18)
-				else:
-					var open_neighbor = in_open
-					if neighbor.g < open_neighbor.g:
-						open_neighbor.g = neighbor.g
-						open_neighbor.parent = neighbor.parent
+	
+	# no path found
 	return null
 
 func _get_neighbors(x: int, y: int): # Vector2 array	
@@ -133,4 +164,3 @@ class Cell:
 		
 	func get_f() -> float:
 		return self.g + self.h
-

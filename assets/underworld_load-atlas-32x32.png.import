@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/underworld_load-atlas-32x32.png-2a0a30a6a177cc39970cf3c01057f398.stex"
+path="res://.import/underworld_load-atlas-32x32.png-ab56b89d3589ec19ce1ed7cdc498ab6b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://underworld_load-atlas-32x32.png"
-dest_files=[ "res://.import/underworld_load-atlas-32x32.png-2a0a30a6a177cc39970cf3c01057f398.stex" ]
+source_file="res://assets/underworld_load-atlas-32x32.png"
+dest_files=[ "res://.import/underworld_load-atlas-32x32.png-ab56b89d3589ec19ce1ed7cdc498ab6b.stex" ]
 
 [params]
 
