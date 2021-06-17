@@ -1,8 +1,11 @@
 # A* PathFinding Algorithm
 
-A demo project using a* to locate a path. The implementation has slight differences with the original algorithm as this will only move in 4 directions (up,down,left,right) in respect with the **tilemap** system.
+A demo project using a* to locate a path. You can configure the path finder script to move in 4 or 8 directional movement. The area on which the agent moves are done using the built-in tilemap system of godot.
 
 Made by: Dave Von David
+
+buy me a coffee?
+https://www.buymeacoffee.com/solodevi
 
 follow me:
 * https://twitter.com/SolodevI
