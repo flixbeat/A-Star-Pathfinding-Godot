@@ -1,10 +1,12 @@
 extends Node
 
+signal target_reach()
+
 enum Direction {FOUR, EIGHT}
 
 export(NodePath) var tilemap_path
 export(Direction) var directional_movement = Direction.FOUR
-export var speed = 160
+export var speed := 160
 
 var _tilemap : TileMap
 var _tileset : TileSet
@@ -25,11 +27,11 @@ func _ready():
 	_tilemap = get_node(tilemap_path)
 	_tileset = _tilemap.tile_set
 	
-	set_process(false)
+	set_physics_process(false)
 
 # @param1: object to move. eg: KinematicBody2D/Sprite/...
 func move(object, start_position: Vector2, target_position: Vector2):
-	var path = _get_path(start_position, target_position)
+	var path = yield(_get_path(start_position, target_position),"completed")
 	
 	if path == null:
 		print("no path possible")
@@ -39,11 +41,11 @@ func move(object, start_position: Vector2, target_position: Vector2):
 	_path = path
 	
 	_path.pop_front()
-	set_process(true)
+	set_physics_process(true)
 
-func _process(delta):
+func _physics_process(delta):
 	if _path.empty():
-		set_process(false)
+		set_physics_process(false)
 		return
 	
 	var next_pos = _tilemap.map_to_world(_path[0].position)
@@ -51,12 +53,15 @@ func _process(delta):
 	next_pos.y += _tilemap.cell_size.y / 2
 	var direction = _cur_pos.direction_to(next_pos)
 	
-	_object.move_and_slide(direction * speed)
+	#_object.move_and_slide(direction * speed)
+	var distance_between_points = _object.position.distance_to(next_pos)
+	_object.position = _object.position.linear_interpolate(next_pos, (delta * speed) / distance_between_points)
+	
 	_cur_coord = _tilemap.world_to_map(_object.position)
 	
-	var cur_point = Vector2(int(_object.position.x),int(_object.position.y))
+	var cur_point = Vector2(_object.position.x,_object.position.y)
 	var next_point = Vector2(next_pos.x,next_pos.y)
-	var distance = int(cur_point.distance_to(next_point))
+	var distance = cur_point.distance_to(next_point)
 	
 	if distance <= 1:
 		_cur_pos = next_pos
@@ -65,8 +70,8 @@ func _process(delta):
 
 func _point_reached():
 	if _cur_coord == _end_coord:
-		print("target point reached")
-		set_process(false)
+		emit_signal("target_reach")
+		set_physics_process(false)
 
 # A*
 func _get_path(start_position: Vector2, target_position: Vector2):
@@ -103,6 +108,9 @@ func _get_path(start_position: Vector2, target_position: Vector2):
 				current = current.parent
 			
 			path.invert()
+			
+			# wait for the loop to finish
+			yield(Engine.get_main_loop().create_timer(0, false), "timeout")
 			return path
 		
 		# get neighbors
@@ -150,6 +158,14 @@ func _get_neighbors(x: int, y: int): # Vector2 array
 	
 	for n in neighbors:
 		var tile_index = _tilemap.get_cell(n.x,n.y)
+		
+		# if there's a debugger error here, it means that there was no tile
+		# on the current tile's neighbor(s), make sure that you put tile around the
+		# current tile.
+		# c = current tile, n = neighboring tile
+		# .... n n n ....
+		# .... n c n ....
+		# .... n n n ....
 		var is_walkable = _tileset.tile_get_name(tile_index) == "walkable"
 		
 		if is_walkable:
