@@ -7,6 +7,7 @@ enum Direction {FOUR, EIGHT}
 export(NodePath) var tilemap_path
 export(Direction) var directional_movement = Direction.FOUR
 export var speed := 160
+export var disabled := false
 
 var _tilemap : TileMap
 var _tileset : TileSet
@@ -41,10 +42,11 @@ func move(object, start_position: Vector2, target_position: Vector2):
 	_path = path
 	
 	_path.pop_front()
+	
 	set_physics_process(true)
 
-func _physics_process(delta):
-	if _path.empty():
+func _physics_process(delta):	
+	if _path == null or _path.empty() or disabled:
 		set_physics_process(false)
 		return
 	
@@ -55,7 +57,8 @@ func _physics_process(delta):
 	
 	#_object.move_and_slide(direction * speed)
 	var distance_between_points = _object.position.distance_to(next_pos)
-	_object.position = _object.position.linear_interpolate(next_pos, (delta * speed) / distance_between_points)
+	var velocity = (delta * speed) / distance_between_points
+	_object.position = _object.position.linear_interpolate(next_pos, velocity)
 	
 	_cur_coord = _tilemap.world_to_map(_object.position)
 	
@@ -63,8 +66,9 @@ func _physics_process(delta):
 	var next_point = Vector2(next_pos.x,next_pos.y)
 	var distance = cur_point.distance_to(next_point)
 	
-	if distance <= 1:
+	if distance <= 0.5:
 		_cur_pos = next_pos
+		_object.position = _cur_pos # prevents getting stuck randomly
 		_path.pop_front()
 		_point_reached()
 
@@ -74,7 +78,7 @@ func _point_reached():
 		set_physics_process(false)
 
 # A*
-func _get_path(start_position: Vector2, target_position: Vector2):
+func _get_path(start_position: Vector2, target_position: Vector2): #-> Cell[]
 	_cur_pos = start_position
 	_target_pos = target_position
 	
@@ -108,21 +112,14 @@ func _get_path(start_position: Vector2, target_position: Vector2):
 				current = current.parent
 			
 			path.invert()
-			
-			# wait for the loop to finish
 			yield(Engine.get_main_loop().create_timer(0, false), "timeout")
 			return path
 		
 		# get neighbors
-		var neighbors = _get_neighbors(q.position.x,q.position.y)
+		var neighbors = _get_neighbors(q)
 		
 		# generate successor and set their parents to q
-		for n in neighbors:
-			var g = q.g + q.position.distance_to(n)
-			var h = n.distance_to(target_position)
-			var neighbor = Cell.new(n,g,h)
-			neighbor.parent = q
-			
+		for neighbor in neighbors:
 			# check if not in the close list
 			var is_in_close = false
 			for c in closed:
@@ -143,34 +140,33 @@ func _get_path(start_position: Vector2, target_position: Vector2):
 				# if not in the open list
 				if not is_in_open:
 					open.append(neighbor)
-	
+		
 	# no path found
+	yield(Engine.get_main_loop().create_timer(0, false), "timeout")
 	return null
 
-func _get_neighbors(x: int, y: int): # Vector2 array	
+func _get_neighbors(q): # Cell[]
+	var x = q.position.x
+	var y = q.position.y
 	var neighbors = [Vector2(x,y-1),Vector2(x,y+1),Vector2(x-1,y),Vector2(x+1,y)]
 	
 	if directional_movement == Direction.EIGHT:
 		var diagonal_neighbors = [Vector2(x-1,y-1),Vector2(x-1,y+1),Vector2(x-1,y+1),Vector2(x+1,y-1)]
 		neighbors.append_array(diagonal_neighbors)
 	
-	var walkable_neighbors = []
+	var walkable_neighbors = [] #Cell
 	
 	for n in neighbors:
 		var tile_index = _tilemap.get_cell(n.x,n.y)
-		
-		# if there's a debugger error here, it means that there was no tile
-		# on the current tile's neighbor(s), make sure that you put tile around the
-		# current tile.
-		# c = current tile, n = neighboring tile
-		# .... n n n ....
-		# .... n c n ....
-		# .... n n n ....
-		var is_walkable = _tileset.tile_get_name(tile_index) == "walkable"
+		var is_walkable = tile_index != -1 and _tileset.tile_get_name(tile_index) == "walkable"
 		
 		if is_walkable:
-			walkable_neighbors.append(n)
-			
+			var g = q.position.distance_to(n) # distance from current node
+			var h = n.distance_to(_end_coord) # distance of this node to end node
+			var cell = Cell.new(n,g,h)
+			cell.parent = q
+			walkable_neighbors.append(cell)
+	
 	return walkable_neighbors
 
 class Cell:
